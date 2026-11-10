@@ -1,0 +1,59 @@
+---
+import '../styles/site.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../site.config';
+import { t, otherLangPath, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** set false for pages that only exist in one language (e.g. 404) */
+  alternate?: boolean;
+}
+const { lang, title, description = site.description[lang], alternate = true } = Astro.props;
+const fullTitle = title ? `${title} | ${site.name[lang]}` : site.name[lang];
+const pathname = Astro.url.pathname;
+const other = otherLangPath(pathname, lang);
+const enPath = lang === 'en' ? pathname : other;
+const zhPath = lang === 'zh' ? pathname : other;
+const fonts =
+  'https://fonts.googleapis.com/css2?family=League+Gothic&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Sans+SC:wght@900&family=Noto+Serif+SC:wght@400;500&display=swap';
+---
+
+<!doctype html>
+<html lang={lang === 'zh' ? 'zh-CN' : 'en'} class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={new URL(pathname, Astro.site)} />
+    {alternate && <link rel="alternate" hreflang="en" href={new URL(enPath, Astro.site)} />}
+    {alternate && <link rel="alternate" hreflang="zh-CN" href={new URL(zhPath, Astro.site)} />}
+    <link rel="alternate" type="application/rss+xml" title={site.name[lang]} href={lang === 'zh' ? '/zh/rss.xml' : '/rss.xml'} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={fonts} />
+    <script is:inline>
+      document.documentElement.classList.replace('no-js', 'js');
+      try {
+        const m = localStorage.getItem('mode');
+        if (m === 'dark' || m === 'light') document.documentElement.dataset.mode = m;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t(lang, 'skip')}</a>
+    <Nav lang={lang} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>

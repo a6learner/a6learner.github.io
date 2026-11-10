@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import type { Item } from '../lib/content';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; items: Item<'projects'>[] }
+const { lang, items } = Astro.props;
+// Four or more projects become a sideways-scrolling rail; fewer sit as a grid.
+const rail = items.length >= 4;
+---
+
+{items.length === 0 ? (
+  <p class="empty">{t(lang, 'empty.projects')}</p>
+) : (
+  <ul class:list={['projects', { 'projects--rail': rail }]} tabindex={rail ? 0 : undefined} aria-label={rail ? t(lang, 'projects.title') : undefined}>
+    {items.map((it) => {
+      const d = it.entry.data;
+      const main = d.link ?? d.repo;
+      return (
+        <li>
+          <article class="sheet sheet--lift project" lang={it.fallback ? (it.lang === 'zh' ? 'zh-CN' : 'en') : undefined}>
+            <div class:list={['project__cover', { 'project__cover--type': !d.cover }]}>
+              {d.cover ? <Image src={d.cover} alt="" width={800} /> : <span aria-hidden="true">{d.title}</span>}
+            </div>
+            <h3>{main ? <a href={main}>{d.title}</a> : d.title}</h3>
+            <p>{d.description}</p>
+            {d.tags.length > 0 && <p class="meta">{d.year ? `${d.year}, ` : ''}{d.tags.join(', ')}</p>}
+            <p class="project__links">
+              {d.repo && <a href={d.repo}>{t(lang, 'projects.code')}</a>}
+              {d.link && <a href={d.link}>{t(lang, 'projects.visit')}</a>}
+            </p>
+          </article>
+        </li>
+      );
+    })}
+  </ul>
+)}

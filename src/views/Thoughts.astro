@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import ThoughtList from '../components/ThoughtList.astro';
+import { thoughts } from '../lib/content';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const items = await thoughts(lang);
+---
+
+<Base lang={lang} title={t(lang, 'thoughts.title')} description={t(lang, 'thoughts.lead')}>
+  <header class="pagehead">
+    <div class="container">
+      <h1>{t(lang, 'thoughts.title')}</h1>
+      <p class="lead">{t(lang, 'thoughts.lead')}</p>
+    </div>
+  </header>
+  <section class="section" style="padding-block-start: 0">
+    <div class="container">
+      <ThoughtList lang={lang} items={items} tilt="0deg" />
+    </div>
+  </section>
+</Base>

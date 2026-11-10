@@ -1,0 +1,22 @@
+---
+// A downloadable file inside a post.
+// In an .mdx post:
+//   import notes from './notes.pdf?url'
+//   <FileCard src={notes} name="notes.pdf" note="My study notes" />
+// Or for a file in public/files/:  <FileCard src="/files/notes.pdf" />
+import { t } from '../i18n/ui';
+interface Props { src: string; name?: string; note?: string }
+const { src, note } = Astro.props;
+const name = Astro.props.name ?? decodeURIComponent(src.split('/').pop()?.split('?')[0] ?? 'file');
+const ext = name.includes('.') ? name.split('.').pop()!.slice(0, 4) : 'file';
+const label = t(Astro.url.pathname.startsWith('/zh') ? 'zh' : 'en', 'file.download');
+---
+
+<div class="filecard">
+  <span class="filecard__type" aria-hidden="true">{ext}</span>
+  <span>
+    <span class="filecard__name">{name}</span>
+    {note && <span class="filecard__note"><br />{note}</span>}
+  </span>
+  <a class="btn" href={src} download={name}>{label}</a>
+</div>

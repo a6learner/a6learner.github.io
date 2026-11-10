@@ -1,0 +1,28 @@
+---
+import { site } from '../site.config';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const links = [
+  { label: t(lang, 'footer.github'), href: site.github },
+  ...(site.email ? [{ label: t(lang, 'footer.email'), href: `mailto:${site.email}` }] : []),
+  ...site.links,
+  { label: t(lang, 'footer.rss'), href: lang === 'zh' ? '/zh/rss.xml' : '/rss.xml' },
+];
+---
+
+<footer class="footer fibre">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <p class="footer__close">{t(lang, 'footer.close')}</p>
+        <p class="footer__sign">{site.short[lang]}</p>
+      </div>
+      <ul class="footer__links">
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+    <p class="footer__legal">© {new Date().getFullYear()} {site.name[lang]}</p>
+  </div>
+</footer>

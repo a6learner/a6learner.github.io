@@ -1,0 +1,33 @@
+---
+title: My post title
+description: One sentence that says what the post is about.
+date: 2026-11-09
+tags: [notes]
+draft: false
+---
+
+Write in Markdown here.
+
+## A heading
+
+A picture that sits in the same folder as this post:
+
+![What the picture shows](./photo.jpg)
+
+A file people can download (also in the same folder):
+
+import notes from './notes.pdf?url'
+
+<FileCard src={notes} name="notes.pdf" note="What this file is" />
+
+Some code:
+
+```python
+print("hello")
+```
+
+How to use this template:
+1. Make a new folder in src/content/blog/, for example src/content/blog/my-first-post/
+2. Save this file there as index.en.mdx (English) or index.zh.mdx (Chinese). You can have both.
+3. Put pictures and files next to it.
+4. To keep a post only on your own computer, put its folder inside src/content/blog/private/

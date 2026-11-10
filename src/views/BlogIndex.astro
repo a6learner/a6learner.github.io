@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import PostIndex from '../components/PostIndex.astro';
+import { posts } from '../lib/content';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const items = await posts(lang);
+const tags = [...new Set(items.flatMap((p) => p.entry.data.tags))].sort();
+---
+
+<Base lang={lang} title={t(lang, 'blog.title')} description={t(lang, 'blog.lead')}>
+  <header class="pagehead">
+    <div class="container">
+      <h1>{t(lang, 'blog.title')}</h1>
+      <p class="lead">{t(lang, 'blog.lead')}</p>
+    </div>
+  </header>
+  <section class="section" style="padding-block-start: 0">
+    <div class="container">
+      {tags.length > 0 && (
+        <div class="filters" role="group" aria-label={t(lang, 'blog.filter')}>
+          <button class="chip" type="button" data-tag="" aria-pressed="true">{t(lang, 'blog.all')}</button>
+          {tags.map((tag) => <button class="chip" type="button" data-tag={tag} aria-pressed="false">{tag}</button>)}
+        </div>
+      )}
+      <PostIndex lang={lang} items={items} lead={false} />
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Tag filter: without JavaScript every post simply shows.
+  const chips = document.querySelectorAll<HTMLButtonElement>('.filters .chip');
+  const rows = document.querySelectorAll<HTMLElement>('[data-index] .index__row');
+  const apply = (tag: string) => {
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.tag === tag)));
+    rows.forEach((r) => { r.hidden = Boolean(tag) && !(r.dataset.tags ?? '').split('|').includes(tag); });
+    const url = new URL(location.href);
+    if (tag) url.searchParams.set('tag', tag); else url.searchParams.delete('tag');
+    history.replaceState(null, '', url);
+  };
+  chips.forEach((c) => c.addEventListener('click', () => apply(c.dataset.tag ?? '')));
+  const start = new URLSearchParams(location.search).get('tag');
+  if (start) apply(start);
+</script>

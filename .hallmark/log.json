@@ -1,0 +1,30 @@
+[
+ {
+  "shape": "Letter",
+  "theme": "pasteup",
+  "axes": "mid/display-condensed/chromatic-yellow",
+  "hero": "Banner",
+  "nav": "floating pill",
+  "footer": "letter close",
+  "imagery": "none yet",
+  "photos": [],
+  "entry": "index",
+  "fingerprint": "letter-banner-pill-letterclose-index-typed-grid",
+  "sections": [
+   "Hero",
+   "Index",
+   "Typed sheet",
+   "Grid",
+   "Footer"
+  ],
+  "signature": "greeting pasted up as movable sheets",
+  "waived": [
+   "77",
+   "37",
+   "theme-motion"
+  ],
+  "prompt": "personal website for Jun Wang: intro, blog, projects, thoughts; playful; bilingual",
+  "date": "2026-11-10",
+  "mode": "build"
+ }
+]

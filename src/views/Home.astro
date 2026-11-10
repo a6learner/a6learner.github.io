@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import PostIndex from '../components/PostIndex.astro';
+import ThoughtList from '../components/ThoughtList.astro';
+import ProjectList from '../components/ProjectList.astro';
+import { posts, thoughts, projects } from '../lib/content';
+import { t, href, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const allPosts = await posts(lang);
+const allThoughts = await thoughts(lang);
+const allProjects = await projects(lang);
+const featured = allProjects.filter((p) => p.entry.data.featured);
+const shownProjects = (featured.length ? featured : allProjects).slice(0, 6);
+const dates = [...allPosts, ...allThoughts].map((i) => i.entry.data.date.valueOf());
+const updated = dates.length ? new Date(Math.max(...dates)) : undefined;
+---
+
+<Base lang={lang}>
+  <Hero lang={lang} updated={updated} />
+
+  <section class="section" id="writing" aria-labelledby="h-writing">
+    <div class="container">
+      <div class="head">
+        <h2 id="h-writing">{t(lang, 'home.writing')}</h2>
+        {allPosts.length > 5 && <a class="head__aside textlink" href={href(lang, '/blog')}>{t(lang, 'home.allWriting')}</a>}
+      </div>
+      <PostIndex lang={lang} items={allPosts.slice(0, 5)} />
+    </div>
+  </section>
+
+  <section class="section section--gap" aria-labelledby="h-thoughts">
+    <div class="container">
+      <div class="head">
+        <h2 id="h-thoughts">{t(lang, 'home.thoughts')}</h2>
+        <a class="head__aside textlink" href={href(lang, '/thoughts')}>{t(lang, 'home.allThoughts')}</a>
+      </div>
+      <ThoughtList lang={lang} items={allThoughts.slice(0, 3)} />
+    </div>
+  </section>
+
+  <section class="section section--gap" aria-labelledby="h-projects">
+    <div class="container">
+      <div class="head">
+        <h2 id="h-projects">{t(lang, 'home.projects')}</h2>
+        <a class="head__aside textlink" href={href(lang, '/projects')}>{t(lang, 'home.allProjects')}</a>
+      </div>
+      <ProjectList lang={lang} items={shownProjects} />
+    </div>
+  </section>
+</Base>

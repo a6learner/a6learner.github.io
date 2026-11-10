@@ -1,0 +1,28 @@
+---
+import { render } from 'astro:content';
+import type { Item } from '../lib/content';
+import { t, formatDate, shortDate, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; items: Item<'thoughts'>[]; tilt?: string }
+const { lang, items, tilt = '0.5deg' } = Astro.props;
+const rendered = await Promise.all(items.map(async (it) => ({ it, Content: (await render(it.entry)).Content })));
+const short = (d: Date) => shortDate(d, lang);
+---
+
+{items.length === 0 ? (
+  <p class="empty">{t(lang, 'empty.thoughts')}</p>
+) : (
+  <div class="sheet typed" style={`--r: ${tilt}`}>
+    <ol class="typed__list">
+      {rendered.map(({ it, Content }) => (
+        <li class="typed__row" id={it.slug.replace(/[^\w-]/g, '-')}>
+          <time class="typed__date" datetime={it.entry.data.date.toISOString()} title={formatDate(it.entry.data.date, lang)}>{short(it.entry.data.date)}</time>
+          <div class="typed__text" lang={it.fallback ? (it.lang === 'zh' ? 'zh-CN' : 'en') : undefined}>
+            <Content />
+            {(it.isDraft || it.isPrivate) && <p><span class="badge">{it.isPrivate ? t(lang, 'badge.private') : t(lang, 'badge.draft')}</span></p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+)}

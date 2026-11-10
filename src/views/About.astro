@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { localized } from '../lib/content';
+import { site } from '../site.config';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const page = (await localized('pages', lang)).find((p) => p.slug === 'about');
+const Content = page ? (await render(page.entry)).Content : null;
+const links = [
+  { label: 'GitHub', href: site.github },
+  ...(site.email ? [{ label: t(lang, 'footer.email'), href: `mailto:${site.email}` }] : []),
+  ...site.links,
+];
+---
+
+<Base lang={lang} title={t(lang, 'about.title')}>
+  <header class="pagehead">
+    <div class="container">
+      <h1>{page?.entry.data.title ?? t(lang, 'about.title')}</h1>
+    </div>
+  </header>
+  <div class="container about">
+    <div class="sheet about__sheet">
+      <div class="prose" lang={page?.fallback ? (page.lang === 'zh' ? 'zh-CN' : 'en') : undefined}>
+        {Content && <Content />}
+      </div>
+    </div>
+    <aside class="sheet sheet--fluoro about__card">
+      <h2>{site.name[lang]}</h2>
+      <ul>
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </aside>
+  </div>
+</Base>

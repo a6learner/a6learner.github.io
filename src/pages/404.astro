@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { t } from '../i18n/ui';
+---
+
+<Base lang="en" title="404" alternate={false}>
+  <div class="container lost">
+    <div class="sheet lost__sheet">
+      <h1>{t('en', '404.title')}</h1>
+    </div>
+    <p lang="zh-CN">{t('zh', '404.title')}</p>
+    <p>
+      <a class="btn btn--primary" href="/">{t('en', '404.back')}</a>
+      <a class="textlink" href="/zh/" lang="zh-CN" style="margin-inline-start: var(--space-lg)">{t('zh', '404.back')}</a>
+    </p>
+  </div>
+</Base>

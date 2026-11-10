@@ -1,0 +1,59 @@
+---
+import { site } from '../site.config';
+import { t, href, formatDate, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; updated?: Date }
+const { lang, updated } = Astro.props;
+const other: Lang = lang === 'en' ? 'zh' : 'en';
+const tagline = site.tagline[lang];
+// Break the greeting after its comma: "Hello," / "I'm Jun."
+const hello = t(lang, 'hero.hello', { name: site.short[lang] });
+const cut = hello.search(/[,，]/) + 1;
+const lines = cut > 0 ? [hello.slice(0, cut), hello.slice(cut).trim()] : [hello];
+---
+
+<section class="hero fibre" aria-labelledby="hello">
+  <div class="container hero__grid">
+    <div class="hero__paste">
+      <div class="sheet hero__sheet paste-in" style="--r: -1.5deg; --i: 0" data-drag tabindex="0" aria-describedby="drag-hint">
+        <h1 id="hello">{lines.map((l, i) => <>{i > 0 && <br />}{l}</>)}</h1>
+      </div>
+      <p class="sheet sheet--fluoro hero__sheet hero__alias paste-in" style="--r: 3deg; --i: 1" data-drag tabindex="0" aria-describedby="drag-hint" lang={other === 'zh' ? 'zh-CN' : 'en'}>
+        {site.name[other]}
+      </p>
+    </div>
+    <div class="hero__note">
+      <p class="lead">
+        {tagline ? tagline : <span class="fill" data-fill="tagline">{t(lang, 'hero.taglineBlank')}</span>}
+      </p>
+      <p><a class="btn btn--primary" href={href(lang, '/blog')}>{t(lang, 'hero.read')}</a></p>
+      {updated && <p class="meta">{t(lang, 'hero.updated')} <time datetime={updated.toISOString()}>{formatDate(updated, lang)}</time></p>}
+      <p class="hero__hint" id="drag-hint">{t(lang, 'hero.drag')}</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // The greeting sheets are not glued down: drag them, nudge with arrow keys, double click or Escape to put back.
+  for (const el of document.querySelectorAll<HTMLElement>('[data-drag]')) {
+    let x = 0, y = 0, sx = 0, sy = 0, held = false;
+    const set = () => { el.style.setProperty('--dx', `${x}px`); el.style.setProperty('--dy', `${y}px`); };
+    el.addEventListener('pointerdown', (e) => {
+      held = true; sx = e.clientX - x; sy = e.clientY - y;
+      el.setPointerCapture(e.pointerId); el.classList.add('is-held');
+    });
+    el.addEventListener('pointermove', (e) => { if (!held) return; x = e.clientX - sx; y = e.clientY - sy; set(); });
+    const drop = () => { held = false; el.classList.remove('is-held'); };
+    el.addEventListener('pointerup', drop);
+    el.addEventListener('pointercancel', drop);
+    el.addEventListener('dblclick', () => { x = 0; y = 0; set(); });
+    el.addEventListener('keydown', (e) => {
+      const step = e.shiftKey ? 48 : 12;
+      const moves: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+      if (e.key === 'Escape') { x = 0; y = 0; set(); return; }
+      const m = moves[e.key];
+      if (!m) return;
+      e.preventDefault(); x += m[0]; y += m[1]; set();
+    });
+  }
+</script>

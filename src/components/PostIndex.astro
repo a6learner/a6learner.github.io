@@ -1,0 +1,30 @@
+---
+import type { Item } from '../lib/content';
+import { t, href, formatDate, shortDate, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; items: Item<'blog'>[]; lead?: boolean }
+const { lang, items, lead = true } = Astro.props;
+const short = (d: Date) => shortDate(d, lang);
+---
+
+{items.length === 0 ? (
+  <p class="empty">{t(lang, 'empty.writing')}</p>
+) : (
+  <ol class="index" data-index>
+    {items.map((it, i) => (
+      <li class:list={['index__row', { 'index__row--lead': lead && i === 0 }]} data-tags={it.entry.data.tags.join('|')}>
+        <a class="index__link" href={href(lang, `/blog/${it.slug}`)}>
+          <time class="index__date" datetime={it.entry.data.date.toISOString()} title={formatDate(it.entry.data.date, lang)}>{short(it.entry.data.date)}</time>
+          <span class="index__body" lang={it.fallback ? (it.lang === 'zh' ? 'zh-CN' : 'en') : undefined}>
+            <h3>{it.entry.data.title}</h3>
+            <p>{it.entry.data.description}</p>
+            {(it.isDraft || it.isPrivate) && (
+              <span><span class="badge">{it.isPrivate ? t(lang, 'badge.private') : t(lang, 'badge.draft')}</span></span>
+            )}
+          </span>
+          <span class="index__tags">{it.entry.data.tags.join(', ')}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+)}
