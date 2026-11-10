@@ -2,6 +2,7 @@
 // Registered for `astro dev` only, so `astro build` (and GitHub Pages) never contain it.
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawn } from 'node:child_process';
 import { ROOT, isPrivatePath, publicAllowlist, preparePublish, commitAndPush, pushPending, aheadCount } from '../../scripts/lib/publish-core.mjs';
 
 const CONTENT = path.join(ROOT, 'src', 'content');
@@ -178,6 +179,17 @@ function upload(p, name, buf) {
   return { markdown: `![](./${path.basename(target)})` };
 }
 
+// Open a file in Obsidian, in the default Markdown app, or show it in Explorer.
+function openWith(p, app) {
+  const file = insideContent(p);
+  if (!file || !fs.existsSync(file)) throw new Error('Save it first.');
+  const run = (cmd, args) => spawn(cmd, args, { detached: true, stdio: 'ignore', windowsVerbatimArguments: true }).unref();
+  // rundll32's FileProtocolHandler opens a URI or file with its registered app, with no shell parsing.
+  if (app === 'obsidian') run('rundll32.exe', ['url.dll,FileProtocolHandler', `obsidian://open?path=${encodeURIComponent(file)}`]);
+  else if (app === 'folder') run('explorer.exe', [`/select,"${file}"`]);
+  else run('rundll32.exe', ['url.dll,FileProtocolHandler', `"${file}"`]);
+}
+
 // ---------- HTTP ----------
 function readBody(req, raw = false) {
   return new Promise((resolve, reject) => {
@@ -207,6 +219,7 @@ async function handle(req, res) {
     if (req.method === 'GET' && route === 'list') return send(res, 200, { items: listItems(), ahead: aheadCount() });
     if (req.method === 'GET' && route === 'item') return send(res, 200, load(url.searchParams.get('path') || ''));
     if (req.method === 'POST' && route === 'save') return send(res, 200, save(await readBody(req)));
+    if (req.method === 'POST' && route === 'open') { const b = await readBody(req); openWith(b.path || '', b.app); return send(res, 200, { ok: true }); }
     if (req.method === 'POST' && route === 'delete') { remove((await readBody(req)).path || ''); return send(res, 200, { ok: true }); }
     if (req.method === 'POST' && route === 'upload') return send(res, 200, upload(url.searchParams.get('path') || '', url.searchParams.get('name') || '', await readBody(req, true)));
     if (req.method === 'POST' && route === 'publish/prepare') return send(res, 200, preparePublish());

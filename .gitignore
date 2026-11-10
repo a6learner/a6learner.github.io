@@ -28,3 +28,8 @@ src/content/**/private/
 
 # Hallmark render screenshots
 .hallmark/shots/
+
+# Obsidian: keep only the shared settings
+src/content/.obsidian/*
+!src/content/.obsidian/app.json
+!src/content/.obsidian/templates.json

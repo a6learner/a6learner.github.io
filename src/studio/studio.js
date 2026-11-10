@@ -272,6 +272,39 @@ form.body.addEventListener('drop', async (e) => {
   }
 });
 
+// ---------- write in Obsidian / another app ----------
+document.querySelectorAll('[data-open]').forEach((b) =>
+  b.addEventListener('click', async () => {
+    try {
+      if (dirty || !current.path) await save();
+      await api('open', { method: 'POST', body: { path: current.path, app: b.dataset.open } });
+      if (b.dataset.open === 'obsidian') say('Opened in Obsidian. Write there; it saves by itself. Come back here to publish.');
+      else if (b.dataset.open === 'default') say('Opened in your default Markdown app.');
+    } catch (err) {
+      say(err.message, true);
+    }
+  }),
+);
+
+// When you come back from Obsidian, pick up what you wrote there (unless there are unsaved edits here).
+async function reloadCurrent() {
+  await loadList().catch(() => {});
+  if (!current?.path || dirty) return;
+  try {
+    const it = await api(`item?path=${encodeURIComponent(current.path)}`);
+    const pos = form.body.selectionStart;
+    fill(it);
+    form.body.setSelectionRange(pos, pos);
+    refreshControls();
+  } catch {
+    // the file was moved or deleted outside the desk
+    startNew(current.kind);
+    say('That file is no longer there. It may have been renamed or deleted in another app.', true);
+  }
+}
+window.addEventListener('focus', reloadCurrent);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) reloadCurrent(); });
+
 // ---------- misc ----------
 form.addEventListener('input', () => { dirty = true; });
 form.addEventListener('change', (e) => { if (e.target.name === 'visibility') refreshControls(); });

@@ -18,3 +18,6 @@ $s.Description = 'Open my blog writing desk'
 $s.WindowStyle = 7  # minimized, so no console flashes
 $s.Save()
 Write-Host "Created $lnk"
+
+# Also register src\content as an Obsidian vault (skipped if Obsidian is open or not installed).
+try { & (Join-Path $PSScriptRoot 'Setup-Obsidian.ps1') } catch { Write-Host "Obsidian setup skipped: $($_.Exception.Message)" }

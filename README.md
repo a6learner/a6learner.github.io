@@ -31,6 +31,10 @@ Double click **Personal Blog** on the desktop. It starts the local site, opens t
 - **Save locally** writes the Markdown file. No git.
 - **Publish to GitHub** (only shown for Public) builds the site, checks that nothing private is in it,
   shows the exact files and commit message, and pushes after you confirm.
+- **Write in Obsidian** saves the item and opens it in Obsidian (the vault is `src/content`).
+  Pasted pictures land in the post's folder and work on the site. Come back to the desk to publish.
+- Create new posts in the desk (it makes the folder and the header), then write in Obsidian.
+  Thoughts can also be made in Obsidian inside `thoughts/` with the **Thought** template.
 - Drop pictures onto the text to add them to a post.
 
 Install or remove the shortcut:

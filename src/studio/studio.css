@@ -51,6 +51,8 @@ h1, h2 { font-weight: 400; text-transform: uppercase; }
 .field--body textarea { min-height: 50dvh; resize: vertical; font-size: 1.0625rem; line-height: 1.7; }
 .field--body.is-drop textarea { outline: 3px dashed var(--sheet-ink); outline-offset: -6px; }
 .hint { font-size: var(--text-sm); color: var(--color-muted); }
+.openwith { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm) var(--space-md); padding: var(--space-md); background: var(--color-code-bg); }
+.openwith .hint { flex-basis: 100%; }
 
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); }
 .btn { display: inline-flex; align-items: center; min-height: 48px; padding: 0 var(--space-lg); border: 0; border-radius: 0; background: var(--color-paper-3); color: var(--sheet-ink); font: 500 0.9375rem/1.2 var(--font-body); white-space: nowrap; cursor: pointer; box-shadow: 4px 4px 0 var(--sheet-ink); outline: 1px solid var(--sheet-ink); outline-offset: -1px; transition: translate var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out); }
