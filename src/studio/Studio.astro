@@ -1,0 +1,99 @@
+---
+// The writing desk. Only exists while `astro dev` runs (see src/integrations/studio.mjs).
+import '../styles/tokens.css';
+import '../styles/base.css';
+import './studio.css';
+const fonts =
+  'https://fonts.googleapis.com/css2?family=League+Gothic&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Noto+Sans+SC:wght@900&family=Noto+Serif+SC:wght@400;500&display=swap';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Writing desk</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href={fonts} />
+    <script is:inline>
+      try { const m = localStorage.getItem('mode'); if (m === 'dark' || m === 'light') document.documentElement.dataset.mode = m; } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <header class="bar">
+      <span class="bar__mark">Writing desk</span>
+      <button class="tool" type="button" id="new-post">New post</button>
+      <button class="tool" type="button" id="new-thought">New thought</button>
+      <span class="bar__space"></span>
+      <a class="tool" href="/" target="_blank" rel="noopener">View site</a>
+    </header>
+
+    <div class="desk">
+      <aside class="list" aria-label="Your writing">
+        <div class="list__filter" role="group" aria-label="Show">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" type="button" data-filter="blog" aria-pressed="false">Posts</button>
+          <button class="chip" type="button" data-filter="thought" aria-pressed="false">Thoughts</button>
+        </div>
+        <ul id="items" class="list__items"></ul>
+      </aside>
+
+      <main class="editor" id="main">
+        <form id="form" class="sheet editor__sheet" autocomplete="off">
+          <p class="editor__kind" id="kind-label">New post</p>
+
+          <fieldset class="vis">
+            <legend>Who can see it</legend>
+            <label class="vis__opt"><input type="radio" name="visibility" value="public" checked /> <span><strong>Public</strong><small>On the website after you publish</small></span></label>
+            <label class="vis__opt"><input type="radio" name="visibility" value="draft" /> <span><strong>Draft</strong><small>Saved, not shown on the website yet</small></span></label>
+            <label class="vis__opt vis__opt--private"><input type="radio" name="visibility" value="private" /> <span><strong>Private</strong><small>Only on this computer, never uploaded</small></span></label>
+          </fieldset>
+
+          <div class="row" data-for="blog">
+            <label class="field field--wide"><span>Title</span><input name="title" type="text" /></label>
+          </div>
+          <div class="row">
+            <label class="field"><span>Language</span>
+              <select name="lang"><option value="en">English</option><option value="zh">中文</option></select>
+            </label>
+            <label class="field"><span>Date</span><input name="date" type="date" /></label>
+            <label class="field" data-for="blog"><span>Web address</span><input name="slug" type="text" placeholder="made from the title" /></label>
+          </div>
+          <div class="row" data-for="blog">
+            <label class="field field--wide"><span>One-line description</span><input name="description" type="text" /></label>
+          </div>
+          <div class="row" data-for="blog">
+            <label class="field field--wide"><span>Tags, separated by commas</span><input name="tags" type="text" /></label>
+          </div>
+
+          <label class="field field--body"><span>Text (Markdown)</span>
+            <textarea name="body" rows="18" spellcheck="true"></textarea>
+          </label>
+          <p class="hint" data-for="blog" id="drop-hint">Drop pictures onto the text to add them (save the post once first).</p>
+
+          <div class="actions">
+            <button class="btn" type="submit" id="save">Save locally</button>
+            <button class="btn btn--primary" type="button" id="publish">Publish to GitHub</button>
+            <a class="textlink" id="preview" href="/" target="_blank" rel="noopener" hidden>Preview</a>
+            <span class="actions__space"></span>
+            <button class="textbtn" type="button" id="delete" hidden>Delete</button>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+        </form>
+      </main>
+    </div>
+
+    <dialog id="confirm" class="sheet dialog" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Publish to GitHub</h2>
+      <div id="confirm-body"></div>
+      <label class="field field--wide" id="msg-field"><span>Commit message</span><input id="msg" type="text" /></label>
+      <div class="actions">
+        <button class="btn btn--primary" type="button" id="confirm-go">Publish these files</button>
+        <button class="btn" type="button" id="confirm-cancel">Cancel</button>
+      </div>
+    </dialog>
+
+    <script>import './studio.js';</script>
+  </body>
+</html>
