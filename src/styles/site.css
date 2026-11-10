@@ -10,7 +10,7 @@
 @import url("./base.css");
 
 /* ---------- base additions ---------- */
-body { font-size: var(--text-body); line-height: 1.55; }
+body { font-size: var(--text-body); line-height: 1.55; caret-color: currentColor; }
 h1, h2 { font-weight: var(--display-weight); text-transform: uppercase; line-height: 1.02; }
 h1 { font-size: var(--text-display); }
 h2 { font-size: var(--text-section); }

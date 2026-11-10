@@ -46,8 +46,21 @@ h1, h2 { font-weight: 400; text-transform: uppercase; }
 .field { display: grid; gap: var(--space-2xs); min-width: 10rem; flex: 1; }
 .field--wide { flex-basis: 100%; }
 .field > span { font-size: var(--text-sm); font-weight: 500; }
-.field input, .field select, .field textarea { width: 100%; min-height: 44px; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-muted); border-radius: 0; background: var(--color-paper-3); color: var(--sheet-ink); font: 400 var(--text-md)/1.5 var(--font-body); }
-.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--sheet-ink); outline-offset: -2px; }
+/* Fields: a typed line on paper. A soft tint and one rule underneath; on focus the rule turns to ink. */
+.field input, .field select, .field textarea {
+  width: 100%; min-height: 44px; padding: var(--space-xs) var(--space-sm);
+  border: 0; border-radius: 0; box-shadow: inset 0 -1px 0 var(--color-rule-2);
+  background: var(--color-code-bg); color: var(--sheet-ink); caret-color: var(--sheet-ink);
+  font: 400 var(--text-md)/1.5 var(--font-body);
+  transition: background-color var(--dur-short) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--sheet-muted); opacity: 0.7; }
+.field input:hover, .field select:hover, .field textarea:hover { box-shadow: inset 0 -1px 0 var(--sheet-muted); }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; background: var(--color-paper-3); box-shadow: inset 0 -2px 0 var(--sheet-ink); }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: none; }
+.field textarea { box-shadow: inset 0 0 0 1px var(--color-rule-2); }
+.field textarea:hover { box-shadow: inset 0 0 0 1px var(--sheet-muted); }
+.field textarea:focus { box-shadow: inset 0 0 0 1px var(--sheet-ink); }
 .field--body textarea { min-height: 50dvh; resize: vertical; font-size: 1.0625rem; line-height: 1.7; }
 .field--body.is-drop textarea { outline: 3px dashed var(--sheet-ink); outline-offset: -6px; }
 .hint { font-size: var(--text-sm); color: var(--color-muted); }
